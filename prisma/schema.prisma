@@ -1,0 +1,221 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum MembershipPlan {
+  FREE
+  GOLD
+  PLATINUM
+}
+
+enum OtpChannel {
+  SMS
+  EMAIL
+}
+
+enum Gender {
+  BRIDE
+  GROOM
+}
+
+enum ProfileStatus {
+  INCOMPLETE
+  ACTIVE
+  PENDING_REVIEW
+}
+
+enum MaritalStatus {
+  NEVER_MARRIED
+  DIVORCED
+  WIDOWED
+  SEPARATED
+  MARRIED
+}
+
+enum InterestStatus {
+  PENDING
+  ACCEPTED
+  DENIED
+}
+
+enum KundaliPreference {
+  COMPULSORY
+  OPTIONAL
+}
+
+enum PartnerWorkType {
+  JOB
+  BUSINESS
+  HOMEMAKER
+}
+
+model User {
+  id                String         @id @default(cuid())
+  phone             String?        @unique
+  email             String?        @unique
+  phoneVerifiedAt   DateTime?
+  emailVerifiedAt   DateTime?
+  role              Role           @default(USER)
+  plan              MembershipPlan @default(FREE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  profile           Profile?
+  interestsSent      Interest[]     @relation("InterestsSent")
+  interestsReceived  Interest[]     @relation("InterestsReceived")
+  conversationsA    Conversation[] @relation("ConversationUserA")
+  conversationsB    Conversation[] @relation("ConversationUserB")
+  messagesSent      Message[]      @relation("MessagesSent")
+}
+
+model Interest {
+  id         String         @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  status     InterestStatus @default(PENDING)
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  fromUser   User           @relation("InterestsSent", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser     User           @relation("InterestsReceived", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@unique([fromUserId, toUserId])
+  @@index([toUserId, status])
+  @@index([fromUserId, status])
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  userAId       String
+  userBId       String
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userA         User      @relation("ConversationUserA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB         User      @relation("ConversationUserB", fields: [userBId], references: [id], onDelete: Cascade)
+  messages      Message[]
+
+  @@unique([userAId, userBId])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  body           String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation("MessagesSent", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}
+
+model OtpChallenge {
+  id         String     @id @default(cuid())
+  identifier String
+  channel    OtpChannel
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int        @default(0)
+  createdAt  DateTime   @default(now())
+
+  @@index([identifier, channel])
+}
+
+model Religion {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  castes   Caste[]
+  profiles Profile[]
+}
+
+model Caste {
+  id         String     @id @default(cuid())
+  name       String
+  religionId String
+  religion   Religion   @relation(fields: [religionId], references: [id], onDelete: Cascade)
+  subCastes  SubCaste[]
+  profiles   Profile[]
+
+  @@unique([religionId, name])
+}
+
+model SubCaste {
+  id       String    @id @default(cuid())
+  name     String
+  casteId  String
+  caste    Caste     @relation(fields: [casteId], references: [id], onDelete: Cascade)
+  profiles Profile[]
+
+  @@unique([casteId, name])
+}
+
+model Profile {
+  id                String         @id @default(cuid())
+  userId            String         @unique
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName       String?
+  gender            Gender?
+  dob               DateTime?
+  motherTongue      String?
+  height            String?
+  birthPlace        String?
+  birthTime         String?
+  complexion        String?
+  education         String?
+  occupation        String?
+  incomeRange       String?
+  city              String?
+  state             String?
+  address           String?
+  fatherName        String?
+  fatherOccupation  String?
+  motherName        String?
+  motherOccupation  String?
+  brothersCount     Int?
+  brothersNames     String?
+  sistersCount      Int?
+  sistersNames      String?
+  maritalStatus     MaritalStatus?
+  spouseName        String?
+  spouseOccupation  String?
+  isDifferentlyAbled Boolean       @default(false)
+  photoUrl          String?
+  religionId        String?
+  casteId           String?
+  subCasteId        String?
+  religion          Religion?      @relation(fields: [religionId], references: [id])
+  caste             Caste?         @relation(fields: [casteId], references: [id])
+  subCaste          SubCaste?      @relation(fields: [subCasteId], references: [id])
+  partnerPreference PartnerPreference?
+  status            ProfileStatus  @default(INCOMPLETE)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+}
+
+model PartnerPreference {
+  id                String             @id @default(cuid())
+  profileId         String             @unique
+  profile           Profile            @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  ageMin            Int
+  ageMax            Int
+  anyCaste          Boolean            @default(false)
+  preferredCasteIds String             @default("[]")
+  workType          PartnerWorkType?
+  incomeRange       String?
+  kundaliMatch      KundaliPreference
+  preferredCategories String           @default("[]")
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
