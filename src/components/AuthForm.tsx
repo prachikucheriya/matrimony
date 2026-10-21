@@ -65,32 +65,9 @@ export function AuthForm({ intent }: AuthFormProps) {
   const [lockedToAccount, setLockedToAccount] = useState(false);
   const [alreadyRegisteredDevice, setAlreadyRegisteredDevice] = useState(false);
 
-  useEffect(() => {
-    const saved = readSavedAccount();
-    if (!saved) return;
-
-    // Same registered mobile forever on this device â€” another number not allowed
-    if (intent === "register" && saved.channel === "SMS") {
-      setChannel(saved.channel);
-      setIdentifier(displayIdentifier(saved.channel, saved.identifier));
-      setLockedToAccount(true);
-    }
-
-    if (intent === "register" && saved.channel === "SMS") {
-      setAlreadyRegisteredDevice(true);
-    }
-  }, [intent]);
-
-  // Registration is mobile-only
-  useEffect(() => {
-    if (intent === "register" && !lockedToAccount) {
-      setChannel("SMS");
-    }
-  }, [intent, lockedToAccount]);
-
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (alreadyRegisteredDevice) {
+    if (alreadyRegisteredDevice && channel === "SMS") {
       router.push("/login");
       return;
     }
@@ -102,7 +79,7 @@ export function AuthForm({ intent }: AuthFormProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          channel: intent === "register" ? "SMS" : channel,
+          channel,
           identifier,
           intent,
         }),
@@ -135,23 +112,7 @@ export function AuthForm({ intent }: AuthFormProps) {
   }
 
   const isRegister = intent === "register";
-  const showChannelToggle = !isRegister;
-
-  if (alreadyRegisteredDevice) {
-    return (
-      <div className="auth-form">
-        <p className="form-hint" role="status">
-          {t("authExtra.alreadyRegisteredDevice")}
-        </p>
-        <p className="muted">
-          <strong>{displayIdentifier(channel, identifier)}</strong>
-        </p>
-        <Link href="/login" className="btn-primary" style={{ display: "inline-block", textAlign: "center" }}>
-          {t("authExtra.goLogin")}
-        </Link>
-      </div>
-    );
-  }
+  const showChannelToggle = true;
 
   return (
     <form onSubmit={onSubmit} className="auth-form">
@@ -171,7 +132,7 @@ export function AuthForm({ intent }: AuthFormProps) {
             role="tab"
             aria-selected={channel === "EMAIL"}
             className={channel === "EMAIL" ? "active" : ""}
-            onClick={() => { setChannel("EMAIL"); setIdentifier(""); setLockedToAccount(false); }}
+            onClick={() => { setChannel("EMAIL"); setIdentifier(""); setLockedToAccount(false); setAlreadyRegisteredDevice(false); }}
           >
             {t("auth.email")}
           </button>
@@ -180,7 +141,7 @@ export function AuthForm({ intent }: AuthFormProps) {
 
       <p className="auth-flow-hint">
         {isRegister
-          ? t("authExtra.registerMobileOnly")
+          ? "Register using your mobile number or email address."
           : lockedToAccount
             ? t("authExtra.lockedForever")
             : t("authExtra.mobileOnlyHint")}
@@ -188,17 +149,17 @@ export function AuthForm({ intent }: AuthFormProps) {
 
       <label className="field">
         <span>
-          {channel === "SMS" || isRegister
+          {channel === "SMS"
             ? t("auth.mobileNumber")
             : t("auth.emailAddress")}
           {lockedToAccount ? t("auth.registeredSuffix") : ""}
         </span>
         <MicInput
           required
-          autoComplete={channel === "SMS" || isRegister ? "tel" : "email"}
-          inputMode={channel === "SMS" || isRegister ? "tel" : "email"}
+          autoComplete={channel === "SMS" ? "tel" : "email"}
+          inputMode={channel === "SMS" ? "tel" : "email"}
           placeholder={
-            channel === "SMS" || isRegister ? "9876543210" : "you@example.com"
+            channel === "SMS" ? "9876543210" : "you@example.com"
           }
           value={identifier}
           onValueChange={(v) => {
