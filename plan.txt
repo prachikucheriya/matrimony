@@ -1,0 +1,55 @@
+BandhanMil — Multi-caste Matrimony Product Plan
+================================================
+
+Phase status
+------------
+[DONE] Phase 1 — Auth & Onboarding
+  - Email/Mobile OTP login & registration
+  - Multi-step onboarding: gender, identity, Religion→Caste→Sub-caste, career/location
+  - Session-protected home stub
+
+[NEXT] Phase 2 — Profiles & Search
+  - Detailed profile management, photos/privacy
+  - Smart search & multi-caste filters
+
+[LATER] Phase 3 — Interests & Chat
+  - Send Interest / Connect
+  - Chat for paid/connected users
+  - Shortlist / favorites
+
+[LATER] Phase 4 — Admin & Monetization
+  - Approve/reject users, ID verification
+  - Caste & Religion master CRUD
+  - Subscriptions (Free/Silver/Gold/Diamond)
+  - Success stories, analytics
+  - Freemium phone/chat unlock, highlighting, assisted matrimony
+
+
+Original feature notes
+----------------------
+A. User Panel (For Candidates & Families)
+Registration & Onboarding: Email/Mobile OTP verification, Basic Details (Age, Caste, Religion, Education, Occupation, Income).
+
+Multi-Caste & Religion Filters: Users apni caste, sub-caste, religion, location, aur mother tongue ke hisaab se filter kar sakein.
+
+Detailed Profile Management: Photo uploads (with privacy settings), Horoscope/Kundali matching (optional integration), Family details.
+
+Smart Search & Filter: Quick search, Advanced search, aur Keyword search.
+
+Interactions:
+"Send Interest" / "Connect" request.
+Chat/Messaging (only for paid/connected users).
+Shortlist / Favorite profiles.
+Privacy Controls: Option to hide photo/phone number until interest is accepted.
+
+B. Admin Panel (For You & Your Team)
+User Management: Approve/Reject profiles, verify ID documents (Aadhaar/Passport).
+Caste & Religion Master: Multi-caste support ke liye backend se naye Religions, Castes, aur Sub-castes add/manage karne ka system.
+Subscription Management: Plans create karna (Free, Silver, Gold, Diamond).
+Success Stories & Content: Reviews aur blogs manage karna.
+Analytics Dashboard: Revenue, daily active users, aur conversion rates track karne ke liye.
+
+C. Monetization Model
+Freemium Model: Profile banana free, lekin Phone Number dekhna ya direct Chat karne ke liye Paid Membership.
+Profile Highlighting: Premium profiles ko search results me sabse upar dikhane ke extra charges.
+Assisted Matrimony: Personal Relationship Manager ki service dena (High-end clients ke liye).
