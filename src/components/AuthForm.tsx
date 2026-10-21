@@ -69,8 +69,8 @@ export function AuthForm({ intent }: AuthFormProps) {
     const saved = readSavedAccount();
     if (!saved) return;
 
-    // Same registered mobile forever on this device — another number not allowed
-    if (saved.channel === "SMS" || intent === "login") {
+    // Same registered mobile forever on this device â€” another number not allowed
+    if (intent === "register" && saved.channel === "SMS") {
       setChannel(saved.channel);
       setIdentifier(displayIdentifier(saved.channel, saved.identifier));
       setLockedToAccount(true);
@@ -135,7 +135,7 @@ export function AuthForm({ intent }: AuthFormProps) {
   }
 
   const isRegister = intent === "register";
-  const showChannelToggle = !isRegister && !lockedToAccount;
+  const showChannelToggle = !isRegister;
 
   if (alreadyRegisteredDevice) {
     return (
@@ -162,7 +162,7 @@ export function AuthForm({ intent }: AuthFormProps) {
             role="tab"
             aria-selected={channel === "SMS"}
             className={channel === "SMS" ? "active" : ""}
-            onClick={() => setChannel("SMS")}
+            onClick={() => { setChannel("SMS"); setIdentifier(""); setLockedToAccount(false); }}
           >
             {t("auth.mobile")}
           </button>
@@ -171,7 +171,7 @@ export function AuthForm({ intent }: AuthFormProps) {
             role="tab"
             aria-selected={channel === "EMAIL"}
             className={channel === "EMAIL" ? "active" : ""}
-            onClick={() => setChannel("EMAIL")}
+            onClick={() => { setChannel("EMAIL"); setIdentifier(""); setLockedToAccount(false); }}
           >
             {t("auth.email")}
           </button>
@@ -202,10 +202,10 @@ export function AuthForm({ intent }: AuthFormProps) {
           }
           value={identifier}
           onValueChange={(v) => {
-            if (lockedToAccount) return;
+            if (lockedToAccount && isRegister) return;
             setIdentifier(v);
           }}
-          readOnly={lockedToAccount}
+          readOnly={lockedToAccount && isRegister}
           append={false}
           showHint={!lockedToAccount}
         />
@@ -306,7 +306,7 @@ export function VerifyOtpForm() {
       }
       sessionStorage.removeItem(STORAGE_KEY);
       saveAccount(channel, data.identifier || identifier);
-      // Sign-up / incomplete → form process; complete login → profile dashboard
+      // Sign-up / incomplete â†’ form process; complete login â†’ profile dashboard
       if (data.needsOnboarding) {
         router.push("/onboarding");
       } else if (data.needsPreferences) {
@@ -363,7 +363,7 @@ export function VerifyOtpForm() {
           ? channel === "SMS"
             ? t("auth.otpDeliveredSms")
             : t("auth.otpDeliveredEmail")
-          : "Provider delivery failed — use on-screen demo OTP.",
+          : "Provider delivery failed â€” use on-screen demo OTP.",
       );
     } catch {
       setError(t("auth.failedSend"));
@@ -403,7 +403,7 @@ export function VerifyOtpForm() {
           <p className="otp-dev-label">
             {delivered
               ? "Dev copy (real OTP also sent)"
-              : "Fallback demo OTP — real delivery failed"}
+              : "Fallback demo OTP â€” real delivery failed"}
           </p>
           <p className="otp-dev-code">{devCode}</p>
           <p className="otp-dev-note">
@@ -427,7 +427,7 @@ export function VerifyOtpForm() {
           inputMode="numeric"
           pattern="\d{6}"
           maxLength={6}
-          placeholder="••••••"
+          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
           autoComplete="one-time-code"
