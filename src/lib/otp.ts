@@ -1,6 +1,7 @@
 import { createHash, randomInt, timingSafeEqual } from "crypto";
 import { OtpChannel } from "@prisma/client";
-import { sendMsg91EmailOtp, sendMsg91SmsOtp } from "@/lib/msg91";
+import { sendMsg91SmsOtp } from "@/lib/msg91";
+import { sendResendEmailOtp } from "@/lib/resend";
 import { prisma } from "@/lib/prisma";
 
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -8,7 +9,7 @@ const MAX_ATTEMPTS = 5;
 const RESEND_COOLDOWN_MS = 30 * 1000;
 
 function isDevOtpMode() {
-  return process.env.OTP_DEV_MODE !== "false";
+  return process.env.NODE_ENV !== "production" && process.env.OTP_DEV_MODE === "true";
 }
 
 export function hashOtp(code: string): string {
@@ -69,7 +70,7 @@ export async function createAndSendOtp(channel: OtpChannel, identifier: string) 
   try {
     delivery =
       channel === OtpChannel.EMAIL
-        ? await sendMsg91EmailOtp(identifier, code)
+        ? await sendResendEmailOtp(identifier, code)
         : await sendMsg91SmsOtp(identifier, code);
   } catch (error) {
     console.error("OTP provider error", error);

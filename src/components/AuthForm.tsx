@@ -65,32 +65,9 @@ export function AuthForm({ intent }: AuthFormProps) {
   const [lockedToAccount, setLockedToAccount] = useState(false);
   const [alreadyRegisteredDevice, setAlreadyRegisteredDevice] = useState(false);
 
-  useEffect(() => {
-    const saved = readSavedAccount();
-    if (!saved) return;
-
-    // Same registered mobile forever on this device — another number not allowed
-    if (saved.channel === "SMS" || intent === "login") {
-      setChannel(saved.channel);
-      setIdentifier(displayIdentifier(saved.channel, saved.identifier));
-      setLockedToAccount(true);
-    }
-
-    if (intent === "register" && saved.channel === "SMS") {
-      setAlreadyRegisteredDevice(true);
-    }
-  }, [intent]);
-
-  // Registration is mobile-only
-  useEffect(() => {
-    if (intent === "register" && !lockedToAccount) {
-      setChannel("SMS");
-    }
-  }, [intent, lockedToAccount]);
-
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
-    if (alreadyRegisteredDevice) {
+    if (alreadyRegisteredDevice && channel === "SMS") {
       router.push("/login");
       return;
     }
@@ -102,7 +79,7 @@ export function AuthForm({ intent }: AuthFormProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          channel: intent === "register" ? "SMS" : channel,
+          channel,
           identifier,
           intent,
         }),
@@ -135,23 +112,7 @@ export function AuthForm({ intent }: AuthFormProps) {
   }
 
   const isRegister = intent === "register";
-  const showChannelToggle = !isRegister && !lockedToAccount;
-
-  if (alreadyRegisteredDevice) {
-    return (
-      <div className="auth-form">
-        <p className="form-hint" role="status">
-          {t("authExtra.alreadyRegisteredDevice")}
-        </p>
-        <p className="muted">
-          <strong>{displayIdentifier(channel, identifier)}</strong>
-        </p>
-        <Link href="/login" className="btn-primary" style={{ display: "inline-block", textAlign: "center" }}>
-          {t("authExtra.goLogin")}
-        </Link>
-      </div>
-    );
-  }
+  const showChannelToggle = true;
 
   return (
     <form onSubmit={onSubmit} className="auth-form">
@@ -162,7 +123,7 @@ export function AuthForm({ intent }: AuthFormProps) {
             role="tab"
             aria-selected={channel === "SMS"}
             className={channel === "SMS" ? "active" : ""}
-            onClick={() => setChannel("SMS")}
+            onClick={() => { setChannel("SMS"); setIdentifier(""); setLockedToAccount(false); }}
           >
             {t("auth.mobile")}
           </button>
@@ -171,7 +132,7 @@ export function AuthForm({ intent }: AuthFormProps) {
             role="tab"
             aria-selected={channel === "EMAIL"}
             className={channel === "EMAIL" ? "active" : ""}
-            onClick={() => setChannel("EMAIL")}
+            onClick={() => { setChannel("EMAIL"); setIdentifier(""); setLockedToAccount(false); setAlreadyRegisteredDevice(false); }}
           >
             {t("auth.email")}
           </button>
@@ -180,7 +141,7 @@ export function AuthForm({ intent }: AuthFormProps) {
 
       <p className="auth-flow-hint">
         {isRegister
-          ? t("authExtra.registerMobileOnly")
+          ? "Register using your mobile number or email address."
           : lockedToAccount
             ? t("authExtra.lockedForever")
             : t("authExtra.mobileOnlyHint")}
@@ -188,24 +149,24 @@ export function AuthForm({ intent }: AuthFormProps) {
 
       <label className="field">
         <span>
-          {channel === "SMS" || isRegister
+          {channel === "SMS"
             ? t("auth.mobileNumber")
             : t("auth.emailAddress")}
           {lockedToAccount ? t("auth.registeredSuffix") : ""}
         </span>
         <MicInput
           required
-          autoComplete={channel === "SMS" || isRegister ? "tel" : "email"}
-          inputMode={channel === "SMS" || isRegister ? "tel" : "email"}
+          autoComplete={channel === "SMS" ? "tel" : "email"}
+          inputMode={channel === "SMS" ? "tel" : "email"}
           placeholder={
-            channel === "SMS" || isRegister ? "9876543210" : "you@example.com"
+            channel === "SMS" ? "9876543210" : "you@example.com"
           }
           value={identifier}
           onValueChange={(v) => {
-            if (lockedToAccount) return;
+            if (lockedToAccount && isRegister) return;
             setIdentifier(v);
           }}
-          readOnly={lockedToAccount}
+          readOnly={lockedToAccount && isRegister}
           append={false}
           showHint={!lockedToAccount}
         />
@@ -306,7 +267,7 @@ export function VerifyOtpForm() {
       }
       sessionStorage.removeItem(STORAGE_KEY);
       saveAccount(channel, data.identifier || identifier);
-      // Sign-up / incomplete → form process; complete login → profile dashboard
+      // Sign-up / incomplete â†’ form process; complete login â†’ profile dashboard
       if (data.needsOnboarding) {
         router.push("/onboarding");
       } else if (data.needsPreferences) {
@@ -363,7 +324,7 @@ export function VerifyOtpForm() {
           ? channel === "SMS"
             ? t("auth.otpDeliveredSms")
             : t("auth.otpDeliveredEmail")
-          : "Provider delivery failed — use on-screen demo OTP.",
+          : "Provider delivery failed â€” use on-screen demo OTP.",
       );
     } catch {
       setError(t("auth.failedSend"));
@@ -403,7 +364,7 @@ export function VerifyOtpForm() {
           <p className="otp-dev-label">
             {delivered
               ? "Dev copy (real OTP also sent)"
-              : "Fallback demo OTP — real delivery failed"}
+              : "Fallback demo OTP â€” real delivery failed"}
           </p>
           <p className="otp-dev-code">{devCode}</p>
           <p className="otp-dev-note">
@@ -427,7 +388,7 @@ export function VerifyOtpForm() {
           inputMode="numeric"
           pattern="\d{6}"
           maxLength={6}
-          placeholder="••••••"
+          placeholder="â€¢â€¢â€¢â€¢â€¢â€¢"
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
           autoComplete="one-time-code"
