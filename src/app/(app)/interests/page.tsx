@@ -1,7 +1,7 @@
-import { redirect } from "next/navigation";
+﻿import { redirect } from "next/navigation";
 import { DashShell } from "@/components/DashShell";
 import { InterestsPageView } from "@/components/InterestsPageView";
-import { toOppositeGender } from "@/components/UserDashboard";
+
 import { ensureDemoInterests, getUserInterests } from "@/lib/interests";
 import { canUseChat } from "@/lib/plan";
 import { prisma } from "@/lib/prisma";
@@ -25,7 +25,7 @@ export default async function InterestsPage() {
   if (!hasPartnerPreference(user.profile)) redirect("/preferences");
 
   const profile = user.profile!;
-  const opposite = toOppositeGender(profile.gender);
+  const opposite = profile.gender === "BRIDE" ? "GROOM" : profile.gender === "GROOM" ? "BRIDE" : undefined;
 
   const matches = await prisma.profile.findMany({
     where: {
@@ -58,3 +58,4 @@ export default async function InterestsPage() {
     </DashShell>
   );
 }
+
