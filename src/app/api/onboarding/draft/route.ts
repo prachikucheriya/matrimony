@@ -18,7 +18,7 @@ export async function GET() {
 export async function PUT(request:Request) {
  const user=await currentUser();
  if (!user) return NextResponse.json({error:"Unauthorized"},{status:401});
- if (user.profile?.status!=="INCOMPLETE") return NextResponse.json({error:"Profile already submitted"},{status:409});
+ if (user.profile && user.profile.status!=="INCOMPLETE") return NextResponse.json({error:"Profile already submitted"},{status:409});
  const body=await request.json();
  if (!Number.isInteger(body.step)||body.step<0||body.step>5||!body.form||typeof body.form!=="object"||Array.isArray(body.form)) return NextResponse.json({error:"Invalid draft"},{status:400});
  const data:Record<string,string|boolean>={};
