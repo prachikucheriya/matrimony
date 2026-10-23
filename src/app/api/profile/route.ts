@@ -125,6 +125,8 @@ export async function POST(request: Request) {
       update: profileData,
     });
 
+    await prisma.onboardingDraft.deleteMany({ where: { userId: session.userId } });
+
     const existingPref = await prisma.partnerPreference.findUnique({
       where: { profileId: profile.id },
       select: { id: true },
