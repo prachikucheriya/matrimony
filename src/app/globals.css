@@ -4720,4 +4720,7 @@ h2,
 .landing-hero {
   position: relative;
 }
-
+/* Language dropdown options text color */
+select option {
+  color: #222222 !important;
+}
