@@ -100,10 +100,12 @@ const initialState: FormState = {
   isDifferentlyAbled: false,
 };
 
-export function OnboardingWizard() {
+export function OnboardingWizard({ userId }: { userId: string }) {
   const router = useRouter();
   const t = useT();
   const [step, setStep] = useState(0);
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const draftKey = `matrimony_onboarding_draft_${userId}`;
   const [form, setForm] = useState<FormState>(initialState);
   const [religions, setReligions] = useState<Option[]>([]);
   const [castes, setCastes] = useState<Option[]>([]);
@@ -112,6 +114,24 @@ export function OnboardingWizard() {
   const [loading, setLoading] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as { step?: number; form?: Partial<FormState> };
+        if (saved.form) setForm({ ...initialState, ...saved.form });
+        if (typeof saved.step === "number" && saved.step >= 0 && saved.step < STEP_KEYS.length) setStep(saved.step);
+      }
+    } catch { /* ignore invalid local draft */ }
+    setDraftLoaded(true);
+  }, [draftKey]);
+
+  useEffect(() => {
+    if (!draftLoaded) return;
+    try { localStorage.setItem(draftKey, JSON.stringify({ step, form })); }
+    catch { /* storage may be unavailable */ }
+  }, [draftKey, draftLoaded, step, form]);
 
   function onPhotoPick(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
@@ -305,6 +325,7 @@ export function OnboardingWizard() {
         }
       }
 
+      localStorage.removeItem(draftKey);
       router.push(data.redirectTo ?? "/preferences");
       router.refresh();
     } catch {
@@ -753,11 +774,11 @@ export function OnboardingWizard() {
   );
 }
 
-export function OnboardingPageClient() {
+export function OnboardingPageClient({ userId }: { userId: string }) {
   const t = useT();
   return (
     <AuthShell title={t("onboarding.title")} subtitle={t("onboarding.subtitle")}>
-      <OnboardingWizard />
+      <OnboardingWizard userId={userId} />
     </AuthShell>
   );
 }
