@@ -116,22 +116,44 @@ export function OnboardingWizard({ userId }: { userId: string }) {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(draftKey);
-      if (raw) {
-        const saved = JSON.parse(raw) as { step?: number; form?: Partial<FormState> };
-        if (saved.form) setForm({ ...initialState, ...saved.form });
-        if (typeof saved.step === "number" && saved.step >= 0 && saved.step < STEP_KEYS.length) setStep(saved.step);
-      }
-    } catch { /* ignore invalid local draft */ }
-    setDraftLoaded(true);
+    let active = true;
+    fetch("/api/onboarding/draft", { cache: "no-store" })
+      .then(r => { if (!r.ok) throw new Error("load failed"); return r.json(); })
+      .then(result => {
+        if (!active) return;
+        const saved = result.draft;
+        if (saved?.form) setForm({ ...initialState, ...saved.form });
+        if (typeof saved?.step === "number" && saved.step >= 0 && saved.step < STEP_KEYS.length) setStep(saved.step);
+      })
+      .catch(() => {
+        if (!active) return;
+        try {
+          const raw = localStorage.getItem(draftKey);
+          if (raw) {
+            const saved = JSON.parse(raw);
+            if (saved.form) setForm({ ...initialState, ...saved.form });
+            if (typeof saved.step === "number" && saved.step >= 0 && saved.step < STEP_KEYS.length) setStep(saved.step);
+          }
+        } catch {}
+      })
+      .finally(() => { if (active) setDraftLoaded(true); });
+    return () => { active = false; };
   }, [draftKey]);
 
   useEffect(() => {
     if (!draftLoaded) return;
-    try { localStorage.setItem(draftKey, JSON.stringify({ step, form })); }
-    catch { /* storage may be unavailable */ }
-  }, [draftKey, draftLoaded, step, form]);
+    try { localStorage.setItem(draftKey, JSON.stringify({ step, form })); } catch {}
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch("/api/onboarding/draft", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ step, form }),
+        signal: controller.signal,
+      }).catch(() => {});
+    }, 1200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [draftLoaded, draftKey, step, form]);
 
   function onPhotoPick(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0] ?? null;
