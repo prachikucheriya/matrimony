@@ -125,7 +125,12 @@ export async function POST(request: Request) {
       update: profileData,
     });
 
-    await prisma.onboardingDraft.deleteMany({ where: { userId: session.userId } });
+    // Draft table may not exist in older Neon databases; profile saving must not fail.
+    try {
+      await prisma.onboardingDraft.deleteMany({ where: { userId: session.userId } });
+    } catch (draftError) {
+      console.warn("Draft cleanup skipped:", draftError);
+    }
 
     const existingPref = await prisma.partnerPreference.findUnique({
       where: { profileId: profile.id },
