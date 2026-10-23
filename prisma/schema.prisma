@@ -69,6 +69,7 @@ model User {
   plan              MembershipPlan @default(FREE)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
+  onboardingDraft   OnboardingDraft?
   profile           Profile?
   interestsSent      Interest[]     @relation("InterestsSent")
   interestsReceived  Interest[]     @relation("InterestsReceived")
@@ -218,4 +219,14 @@ model PartnerPreference {
   preferredCategories String           @default("[]")
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
+}
+
+model OnboardingDraft {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  step      Int      @default(0)
+  data      Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
