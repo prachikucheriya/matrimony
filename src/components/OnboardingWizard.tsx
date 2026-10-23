@@ -164,7 +164,7 @@ export function OnboardingWizard({ userId }: { userId: string }) {
   useEffect(() => {
     fetch("/api/masters/religions")
       .then((r) => r.json())
-      .then((data) => setReligions(data.religions ?? []))
+      .then((data) => { const jain=(data.religions ?? []).find((item: Option)=>item.name==="Jain"); setReligions(jain?[jain]:[]); if(jain) setForm(prev=>({...prev,religionId:jain.id})); })
       .catch(() => setError("Could not load religions."));
   }, []);
 
@@ -175,7 +175,7 @@ export function OnboardingWizard({ userId }: { userId: string }) {
     }
     fetch(`/api/masters/castes?religionId=${form.religionId}`)
       .then((r) => r.json())
-      .then((data) => setCastes(data.castes ?? []))
+      .then((data) => setCastes((data.castes ?? []).filter((item: Option)=>["Jain Shwetambar Sthanakvasi","Jain Shwetambar Murtipujak","Terapanthi","Digambar"].includes(item.name))))
       .catch(() => setError("Could not load castes."));
   }, [form.religionId]);
 
@@ -186,7 +186,7 @@ export function OnboardingWizard({ userId }: { userId: string }) {
     }
     fetch(`/api/masters/sub-castes?casteId=${form.casteId}`)
       .then((r) => r.json())
-      .then((data) => setSubCastes(data.subCastes ?? []))
+      .then((data) => { const general=(data.subCastes ?? []).find((item: Option)=>item.name==="General"); setSubCastes(general?[general]:[]); if(general) setForm(prev=>({...prev,subCasteId:general.id})); })
       .catch(() => setError("Could not load sub-castes."));
   }, [form.casteId]);
 
@@ -484,50 +484,10 @@ export function OnboardingWizard({ userId }: { userId: string }) {
       {step === 2 && (
         <div className="fields">
           <label className="field">
-            <span>{t("onboarding.religion")}</span>
-            <select
-              value={form.religionId}
-              onChange={(e) => update("religionId", e.target.value)}
-              required
-            >
-              <option value="">{t("onboarding.selectReligion")}</option>
-              {religions.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>{t("onboarding.caste")}</span>
-            <select
-              value={form.casteId}
-              onChange={(e) => update("casteId", e.target.value)}
-              required
-              disabled={!form.religionId}
-            >
-              <option value="">{t("onboarding.selectCaste")}</option>
-              {castes.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>{t("onboarding.subCaste")}</span>
-            <select
-              value={form.subCasteId}
-              onChange={(e) => update("subCasteId", e.target.value)}
-              required
-              disabled={!form.casteId}
-            >
-              <option value="">{t("onboarding.selectSubCaste")}</option>
-              {subCastes.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
+            <span>Jain Community</span>
+            <select value={form.casteId} onChange={(e)=>update("casteId",e.target.value)} required>
+              <option value="">Select Jain Community</option>
+              {castes.map(item=><option key={item.id} value={item.id}>{item.name}</option>)}
             </select>
           </label>
         </div>
