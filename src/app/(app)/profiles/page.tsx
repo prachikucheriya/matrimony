@@ -15,6 +15,7 @@ export default async function ProfilesPage({
     ageMin?: string;
     ageMax?: string;
     religion?: string;
+    subCaste?: string;
     motherTongue?: string;
     location?: string;
     sort?: string;
@@ -66,6 +67,7 @@ export default async function ProfilesPage({
           ageMin: params.ageMin,
           ageMax: params.ageMax,
           religion: params.religion,
+          subCaste: params.subCaste,
           motherTongue: params.motherTongue,
           location: params.location,
           sort: params.sort,
