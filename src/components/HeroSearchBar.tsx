@@ -16,6 +16,7 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
   const [ageMin, setAgeMin] = useState("22");
   const [ageMax, setAgeMax] = useState("27");
   const [motherTongue, setMotherTongue] = useState("");
+  const [subCaste, setSubCaste] = useState("");
 
   const ageMaxOptions = useMemo(
     () => AGES.filter((age) => age >= Number(ageMin)),
@@ -29,6 +30,7 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
     params.set("ageMin", ageMin);
     params.set("ageMax", String(Math.max(Number(ageMin), Number(ageMax))));
     params.set("religion", "Jain");
+    if (subCaste) params.set("subCaste", subCaste);
     if (motherTongue) params.set("motherTongue", motherTongue);
 
     sessionStorage.setItem(
@@ -87,9 +89,16 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
       </div>
 
       <div className="hero-search-field">
-        <label htmlFor="jain-community">Community</label>
-        <select id="jain-community" value="Jain" disabled>
-          <option value="Jain">Jain Only</option>
+        <label htmlFor="jain-community">Jain Sub-Caste</label>
+        <select id="jain-community" value={subCaste} onChange={(e) => setSubCaste(e.target.value)}>
+          <option value="">All Jain Sub-Castes</option>
+          <option value="Digambar">Digambar</option>
+          <option value="Shwetambar">Shwetambar</option>
+          <option value="Murtipujak">Shwetambar Murtipujak</option>
+          <option value="Sthanakvasi">Shwetambar Sthanakvasi</option>
+          <option value="Terapanthi">Terapanthi</option>
+          <option value="Bispanthi">Bispanthi</option>
+          <option value="General">Other Jain</option>
         </select>
       </div>
 
