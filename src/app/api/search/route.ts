@@ -3,7 +3,6 @@ import { Gender, Prisma } from "@prisma/client";
 import {
   categoryMatchFilter,
   isProfileCategory,
-  parsePreferredCategories,
 } from "@/lib/categories";
 import { canViewContactDetails } from "@/lib/plan";
 import { prisma } from "@/lib/prisma";
@@ -32,7 +31,6 @@ export async function GET(request: NextRequest) {
 
   const q = (request.nextUrl.searchParams.get("q") || "").trim();
   const genderParam = request.nextUrl.searchParams.get("gender");
-  const religion = (request.nextUrl.searchParams.get("religion") || "").trim();
   const subCaste = (request.nextUrl.searchParams.get("subCaste") || "").trim();
   const motherTongue = (request.nextUrl.searchParams.get("motherTongue") || "").trim();
   const location = (request.nextUrl.searchParams.get("location") || "").trim();
@@ -48,7 +46,6 @@ export async function GET(request: NextRequest) {
       profile: {
         select: {
           gender: true,
-          partnerPreference: { select: { preferredCategories: true } },
         },
       },
     },
@@ -76,12 +73,9 @@ export async function GET(request: NextRequest) {
     .split(",")
     .map((c) => c.trim())
     .filter(isProfileCategory);
-  const prefCategories = parsePreferredCategories(
-    me?.partnerPreference?.preferredCategories,
-  );
-  const catFilter = categoryMatchFilter(
-    selectedCategories.length > 0 ? selectedCategories : prefCategories,
-  );
+  // Only apply categories explicitly selected in search. Never silently
+  // narrow results using stored partner preferences.
+  const catFilter = categoryMatchFilter(selectedCategories);
   if (catFilter) {
     where.AND = [
       ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
@@ -89,9 +83,7 @@ export async function GET(request: NextRequest) {
     ];
   }
 
-  if (religion) {
-    where.religion = { name: { equals: religion } };
-  }
+  where.religion = { name: { equals: "Jain" } };
 
   if (subCaste) {
     where.caste = { name: { equals: subCaste } };
