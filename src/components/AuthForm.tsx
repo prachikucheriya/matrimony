@@ -64,6 +64,18 @@ export function AuthForm({ intent }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [lockedToAccount, setLockedToAccount] = useState(false);
   const [alreadyRegisteredDevice, setAlreadyRegisteredDevice] = useState(false);
+  function useAdminTestOtp() {
+    if (channel !== "EMAIL") return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier.trim())) {
+      setError("Enter a valid email first."); return;
+    }
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+      channel: "EMAIL", identifier: identifier.trim().toLowerCase(), intent,
+      delivered: false, deliveryError: null, devCode: null
+    }));
+    router.push("/verify-otp");
+  }
+
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -181,6 +193,12 @@ export function AuthForm({ intent }: AuthFormProps) {
       <button type="submit" className="btn-primary" disabled={loading}>
         {loading ? t("auth.sendingOtp") : t("auth.sendOtp")}
       </button>
+
+      {channel === "EMAIL" && (
+        <button type="button" className="btn-ghost" onClick={useAdminTestOtp}>
+          Have an Admin test OTP? Enter it here
+        </button>
+      )}
 
       <p className="auth-switch">
         {isRegister ? (
