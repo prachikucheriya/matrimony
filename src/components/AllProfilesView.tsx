@@ -75,6 +75,7 @@ export function AllProfilesView({
     return "";
   });
   const [religion, setReligion] = useState(initial.religion || "");
+  const subCaste = initial.subCaste || "";
   const [motherTongue, setMotherTongue] = useState(initial.motherTongue || "");
   const [location, setLocation] = useState(initial.location || "");
   const [sort, setSort] = useState(initial.sort || "newest");
@@ -108,7 +109,7 @@ export function AllProfilesView({
       q: query,
       category,
     };
-  }, [gender, ageRange, religion, motherTongue, location, sort, query, category]);
+  }, [gender, ageRange, religion, subCaste, motherTongue, location, sort, query, category]);
 
   const filterKey = useMemo(() => JSON.stringify(filters), [filters]);
 
@@ -123,6 +124,7 @@ export function AllProfilesView({
     if (filters.ageMin) params.set("ageMin", filters.ageMin);
     if (filters.ageMax) params.set("ageMax", filters.ageMax);
     if (filters.religion) params.set("religion", filters.religion);
+    if (filters.subCaste) params.set("subCaste", filters.subCaste);
     if (filters.motherTongue) params.set("motherTongue", filters.motherTongue);
     if (filters.location) params.set("location", filters.location);
     if (filters.sort) params.set("sort", filters.sort);
