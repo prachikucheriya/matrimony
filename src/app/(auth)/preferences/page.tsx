@@ -1,3 +1,4 @@
+import { OnboardingLogout } from "@/components/OnboardingLogout";
 import { redirect } from "next/navigation";
 import { PreferencesForm } from "@/components/PreferencesForm";
 import { PreferencesPageClient } from "@/components/PreferencesPageClient";
@@ -48,7 +49,7 @@ export default async function PreferencesPage({
   }
 
   return (
-    <PreferencesPageClient alreadySaved={alreadySaved}>
+    <><div className="flex justify-end p-3"><OnboardingLogout /></div><PreferencesPageClient alreadySaved={alreadySaved}>
       <PreferencesForm
         gender={profile.gender === "GROOM" ? "GROOM" : "BRIDE"}
         religionId={profile.religionId}
@@ -67,6 +68,6 @@ export default async function PreferencesPage({
             : ["FRESH"],
         }}
       />
-    </PreferencesPageClient>
+    </PreferencesPageClient></>
   );
 }
