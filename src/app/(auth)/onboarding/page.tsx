@@ -1,4 +1,3 @@
-import { OnboardingLogout } from "@/components/OnboardingLogout";
 import { OnboardingPageClient } from "@/components/OnboardingWizard";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -22,5 +21,5 @@ export default async function OnboardingPage() {
     redirect(hasPartnerPreference(user.profile) ? "/home" : "/preferences");
   }
 
-  return <><div className="flex justify-end p-3"><OnboardingLogout /></div><OnboardingPageClient userId={session.userId} /></>;
+  return <OnboardingPageClient userId={session.userId} />;
 }
