@@ -34,6 +34,7 @@ type InitialFilters = {
   ageMin?: string;
   ageMax?: string;
   religion?: string;
+  subCaste?: string;
   motherTongue?: string;
   location?: string;
   q?: string;
@@ -103,6 +104,7 @@ export function AllProfilesView({
       ageMin,
       ageMax,
       religion,
+      subCaste,
       motherTongue,
       location,
       sort,
