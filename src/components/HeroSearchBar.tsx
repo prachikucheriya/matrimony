@@ -15,7 +15,6 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
   const [lookingFor, setLookingFor] = useState<"BRIDE" | "GROOM">("BRIDE");
   const [ageMin, setAgeMin] = useState("22");
   const [ageMax, setAgeMax] = useState("27");
-  const [religion, setReligion] = useState("");
   const [motherTongue, setMotherTongue] = useState("");
 
   const ageMaxOptions = useMemo(
@@ -29,7 +28,7 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
     params.set("gender", lookingFor);
     params.set("ageMin", ageMin);
     params.set("ageMax", String(Math.max(Number(ageMin), Number(ageMax))));
-    if (religion) params.set("religion", religion);
+    params.set("religion", "Jain");
     if (motherTongue) params.set("motherTongue", motherTongue);
 
     sessionStorage.setItem(
@@ -88,18 +87,9 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
       </div>
 
       <div className="hero-search-field">
-        <label htmlFor="religion">{t("heroSearch.religion")}</label>
-        <select
-          id="religion"
-          value={religion}
-          onChange={(e) => setReligion(e.target.value)}
-        >
-          <option value="">{t("common.select")}</option>
-          {religions.map((item) => (
-            <option key={item.id} value={item.name}>
-              {item.name}
-            </option>
-          ))}
+        <label htmlFor="jain-community">Community</label>
+        <select id="jain-community" value="Jain" disabled>
+          <option value="Jain">Jain Only</option>
         </select>
       </div>
 
