@@ -27,7 +27,7 @@ export function AuthShell({
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher compact />
-            {showLogout && <OnboardingLogout />}
+            {(usePathname() === "/onboarding" || usePathname() === "/preferences") && <OnboardingLogout />}
           </div>
         </div>
         <h1>{title}</h1>
