@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   const castes = await prisma.caste.findMany({
 
-    where: religionId ? { religionId } : undefined,
+    where: { religion: { name: "Jain" }, ...(religionId ? { religionId } : {}) },
 
     orderBy: { name: "asc" },
 
