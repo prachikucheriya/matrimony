@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (subCaste) {
-    where.OR = [{ subCaste: { name: { equals: subCaste } } }, { caste: { name: { equals: subCaste } } }];
+    where.caste = { name: { equals: subCaste } };
   }
 
   if (motherTongue) {
