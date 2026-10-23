@@ -3,6 +3,8 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { OnboardingLogout } from "@/components/OnboardingLogout";
+import { usePathname } from "next/navigation";
 
 export function AuthShell({
   title,
@@ -23,7 +25,10 @@ export function AuthShell({
           <Link href="/" className="brand-mark">
             Bandhan<span>Mil</span>
           </Link>
-          <LanguageSwitcher compact />
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher compact />
+            {showLogout && <OnboardingLogout />}
+          </div>
         </div>
         <h1>{title}</h1>
         <p className="lede">{subtitle}</p>
