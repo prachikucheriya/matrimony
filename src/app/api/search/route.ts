@@ -33,6 +33,7 @@ export async function GET(request: NextRequest) {
   const q = (request.nextUrl.searchParams.get("q") || "").trim();
   const genderParam = request.nextUrl.searchParams.get("gender");
   const religion = (request.nextUrl.searchParams.get("religion") || "").trim();
+  const subCaste = (request.nextUrl.searchParams.get("subCaste") || "").trim();
   const motherTongue = (request.nextUrl.searchParams.get("motherTongue") || "").trim();
   const location = (request.nextUrl.searchParams.get("location") || "").trim();
   const sort = (request.nextUrl.searchParams.get("sort") || "newest").trim();
@@ -90,6 +91,10 @@ export async function GET(request: NextRequest) {
 
   if (religion) {
     where.religion = { name: { equals: religion } };
+  }
+
+  if (subCaste) {
+    where.OR = [{ subCaste: { name: { equals: subCaste } } }, { caste: { name: { equals: subCaste } } }];
   }
 
   if (motherTongue) {
