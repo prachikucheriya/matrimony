@@ -17,6 +17,7 @@ export function AuthShell({
   children: ReactNode;
   flowHint?: string;
 }) {
+  const pathname = usePathname();
   return (
     <main className="auth-page">
       <div className="auth-backdrop" aria-hidden />
@@ -27,7 +28,7 @@ export function AuthShell({
           </Link>
           <div className="flex items-center gap-3">
             <LanguageSwitcher compact />
-            {(usePathname() === "/onboarding" || usePathname() === "/preferences") && <OnboardingLogout />}
+            {(pathname === "/onboarding" || pathname === "/preferences") && <OnboardingLogout />}
           </div>
         </div>
         <h1>{title}</h1>
