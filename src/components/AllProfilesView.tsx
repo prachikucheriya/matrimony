@@ -75,7 +75,7 @@ export function AllProfilesView({
     }
     return "";
   });
-  const [religion, setReligion] = useState(initial.religion || "");
+  const [religion, setReligion] = useState("Jain");
   const subCaste = initial.subCaste || "";
   const [motherTongue, setMotherTongue] = useState(initial.motherTongue || "");
   const [location, setLocation] = useState(initial.location || "");
@@ -103,7 +103,7 @@ export function AllProfilesView({
       gender,
       ageMin,
       ageMax,
-      religion,
+      religion: "Jain",
       subCaste,
       motherTongue,
       location,
@@ -159,7 +159,7 @@ export function AllProfilesView({
       params.set("ageMin", min);
       params.set("ageMax", max);
     }
-    if (religion) params.set("religion", religion);
+    params.set("religion", "Jain");
     if (motherTongue) params.set("motherTongue", motherTongue);
     if (location) params.set("location", location);
     if (sort) params.set("sort", sort);
@@ -171,7 +171,7 @@ export function AllProfilesView({
   function resetFilters() {
     setGender("");
     setAgeRange("");
-    setReligion("");
+    setReligion("Jain");
     setMotherTongue("");
     setLocation("");
     setSort("newest");
@@ -187,7 +187,7 @@ export function AllProfilesView({
         <div className="profiles-hero-content">
           <p className="profiles-hero-kicker">BandhanMil</p>
           <h1>Lakhs of Happy Marriages</h1>
-          <p>Browse verified multi-caste profiles and find your right match.</p>
+          <p>Browse Jain community profiles and find your right match.</p>
           <Link href="/register" className="btn-primary">
             Join now for Free
           </Link>
@@ -254,14 +254,9 @@ export function AllProfilesView({
             </label>
 
             <label className="field">
-              <span>Religion</span>
-              <select value={religion} onChange={(e) => setReligion(e.target.value)}>
-                <option value="">Any</option>
-                {religions.map((item) => (
-                  <option key={item.id} value={item.name}>
-                    {item.name}
-                  </option>
-                ))}
+              <span>Community</span>
+              <select value="Jain" disabled>
+                <option value="Jain">Jain Only</option>
               </select>
             </label>
 
