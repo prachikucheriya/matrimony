@@ -4724,3 +4724,41 @@ h2,
 select option {
   color: #222222 !important;
 }
+
+/* BandhanMil Jain-only homepage search: responsive polished layout */
+.landing-hero .hero-search {
+  width: min(1280px, 100%);
+  margin: 1.8rem auto 0;
+  display: grid;
+  grid-template-columns: minmax(150px,1fr) minmax(225px,1.25fr) minmax(150px,.9fr) minmax(160px,1fr) auto;
+  gap: 1rem;
+  align-items: end;
+  padding: 1.3rem;
+  background: rgba(24,19,22,.82);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 18px;
+  box-shadow: 0 22px 55px rgba(0,0,0,.25);
+}
+.landing-hero .hero-search-field { min-width: 0; }
+.landing-hero .hero-search-field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  border: 1px solid #e5dce0;
+  border-radius: 9px;
+  padding: .65rem .8rem;
+  background: #fff;
+  color: #342b30;
+}
+.landing-hero .hero-search-field select:disabled { background:#f7f0f2; color:#76283e; opacity:1; font-weight:650; }
+.landing-hero .age-range { display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:.5rem; }
+.landing-hero .hero-search-btn { min-height:52px; border-radius:9px; background:#a5153e; padding:.7rem 1.4rem; }
+.landing-hero .hero-search-btn:hover { background:#831132; }
+@media(max-width:1050px) {
+ .landing-hero .hero-search { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .landing-hero .hero-search-btn { grid-column:1/-1; }
+}
+@media(max-width:600px) {
+ .landing-hero .hero-search { grid-template-columns:1fr; padding:1rem; gap:.8rem; margin-top:1.1rem; }
+ .landing-hero .hero-search-btn { grid-column:auto; width:100%; }
+}
