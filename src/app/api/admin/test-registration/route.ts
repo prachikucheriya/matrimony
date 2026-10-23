@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     }
     const body = await request.json();
     const email = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || email.length > 254) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
       return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
     }
     if (await prisma.user.findUnique({ where: { email }, select: { id: true } })) {
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     }
     if (body.action === "verify") {
       const code = typeof body.code === "string" ? body.code : "";
-      if (!/^\\d{6}$/.test(code)) return NextResponse.json({ error: "Enter the 6-digit OTP." }, { status: 400 });
+      if (!/^\d{6}$/.test(code)) return NextResponse.json({ error: "Enter the 6-digit OTP." }, { status: 400 });
       const result = await verifyOtpCode(OtpChannel.EMAIL, email, code);
       if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
       const user = await prisma.user.create({
