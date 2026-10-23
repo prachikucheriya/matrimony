@@ -89,16 +89,13 @@ export function HeroSearchBar({ religions }: { religions: ReligionOption[] }) {
       </div>
 
       <div className="hero-search-field">
-        <label htmlFor="jain-community">Jain Sub-Caste</label>
+        <label htmlFor="jain-community">Jain Community</label>
         <select id="jain-community" value={subCaste} onChange={(e) => setSubCaste(e.target.value)}>
-          <option value="">All Jain Sub-Castes</option>
-          <option value="Digambar">Digambar</option>
-          <option value="Shwetambar">Shwetambar</option>
-          <option value="Murtipujak">Shwetambar Murtipujak</option>
-          <option value="Sthanakvasi">Shwetambar Sthanakvasi</option>
+          <option value="">All Jain Communities</option>
+          <option value="Jain Shwetambar Sthanakvasi">Jain Shwetambar Sthanakvasi</option>
+          <option value="Jain Shwetambar Murtipujak">Jain Shwetambar Murtipujak</option>
           <option value="Terapanthi">Terapanthi</option>
-          <option value="Bispanthi">Bispanthi</option>
-          <option value="General">Other Jain</option>
+          <option value="Digambar">Digambar</option>
         </select>
       </div>
 
