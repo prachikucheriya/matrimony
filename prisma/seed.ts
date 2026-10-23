@@ -14,7 +14,7 @@ const masterData: { name: string; castes: CasteSeed[] }[] = [
   {
     name: "Jain",
     castes: [
-      { name: "Digambar", subCastes: ["General", "Bispanthi", "Terapanthi"] },
+      { name: "Digambar", subCastes: [] },
       { name: "Shwetambar", subCastes: ["General", "Murtipujak", "Sthanakvasi"] },
       { name: "Jain", subCastes: ["General"] },
     ],
